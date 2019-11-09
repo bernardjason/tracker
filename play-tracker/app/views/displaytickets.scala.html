@@ -1,0 +1,234 @@
+@(ticketList: List[TicketList])(implicit messages: Messages , request: RequestHeader , flash: Flash)
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+@helper.CSRF.formField
+
+<script>
+
+var todo
+function rowClick(r) {
+    todo=r
+    var iAm=frameElement.id ;
+    if ( iAm == "myTickets" ) {
+        //$('#modalTitle').text("Delete, job done");
+        //$('#sureModal').modal('show');
+        $('#deleteUpdateModal').modal('show');
+    } else {
+        $('#modalTitle').text("Take ownership");
+        $('#sureModal').modal('show');
+    }
+
+    $('.btn-primary').focus();
+
+}
+
+function confirm() {
+    $('#sureModal').modal('hide');
+    doAction(todo)
+    todo=null
+}
+function pad (str, max) {
+  str = str.toString();
+  return str.length < max ? pad("0" + str, max) : str;
+}
+
+function saveUpdate(text) {
+    $('#deleteUpdateModal').modal('hide');
+
+    $(todo).find('td').each (function(column, td) {
+        window[$(td).attr('id')]  = $(td).text() ;
+
+    });
+    console.log(ticketDetails);
+    console.log(ticketName);
+    var now = new Date();
+
+     var datetime = now.getDate() + "/"
+                + pad((now.getMonth()+1),2)  + "/"
+                + now.getFullYear() + " "
+                + pad(now.getHours(),2) + ":"
+                + pad(now.getMinutes(),2) + ":"
+                + pad(now.getSeconds(),2);
+
+    if ( typeof text !== 'undefined' ) {
+        ticketDetails = ticketDetails + "\n"+ datetime+" -- " +text;
+    }
+
+    ticketId = $(todo).attr('id');
+    var json = { "ticketId":ticketId , "ticketName":ticketName ,
+                 "ticketCreate":ticketCreate ,"ticketDetails":ticketDetails } ;
+
+    var csrf = $('input[name=csrfToken]').val()
+
+    console.log(json);
+
+    $.ajax({
+       url: '@routes.TicketController.ticketPut',
+       headers: {
+                    'Csrf-Token':csrf,
+                } ,
+       type: 'PUT',
+       contentType : "application/json; charset=utf-8",
+       data: JSON.stringify(json) ,
+       success: function(result) {
+               setTimeout(refreshFrame, 200);
+       },
+       error: function(result) {
+               setTimeout(refreshFrame, 200);
+       }
+    });
+
+}
+
+function doAction(r) {
+
+
+    var iAm=frameElement.id ;
+
+    var csrf = $('input[name=csrfToken]').val()
+
+    $(r).find('td').each (function(column, td) {
+        window[$(td).attr('id')]  = $(td).text() ;
+    });
+
+    ticketId = $(r).attr('id');
+    var json = { "ticketId":ticketId , "ticketName":ticketName ,
+                 "ticketCreate":ticketCreate ,"ticketDetails":ticketDetails } ;
+
+
+
+    if ( iAm == "myTickets" ) {
+
+        del= "/ticket/";
+        del= del+ticketId;
+        $.ajax({
+           url: del,
+           headers: {
+                            'Csrf-Token':csrf,
+                    } ,
+           type: 'DELETE',
+           contentType : "application/json; charset=utf-8",
+           success: function(result) {
+                   setTimeout(refreshFrame, 100);
+           },
+           error: function(result) {
+                   setTimeout(refreshFrame, 10);
+           }
+        });
+    } else {
+        $.ajax({
+           url: '@routes.TicketController.ticketPut',
+           headers: {
+                            'Csrf-Token':csrf,
+                    } ,
+           type: 'PUT',
+           contentType : "application/json; charset=utf-8",
+           data: JSON.stringify(json) ,
+           success: function(result) {
+                   setTimeout(refreshFrame, 100);
+           },
+           error: function(result) {
+                   setTimeout(refreshFrame, 10);
+           }
+        });
+    }
+}
+
+function refreshFrame() {
+    window.parent.$('#myTickets').attr('src', window.parent.$('#myTickets').attr('src'));
+    window.parent.$('#allTickets').attr('src', window.parent.$('#allTickets').attr('src'));
+}
+</script>
+
+
+@if(flash.get("error")) {
+
+<div class="alert alert-danger">
+    <strong>Error!</strong> @flash.get("error")
+    Refresh to clear
+</div>
+
+}
+
+
+<table class="table table-hover">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">user</th>
+        <th scope="col">created</th>
+        <th scope="col">name</th>
+        <th scope="col">detail</th>
+    </tr>
+    </thead>
+    <tbody>
+
+@for(t <- ticketList){
+    <tr class="table-row" id="@t.ticketId" onclick="rowClick(this)">
+       <td id="ticketUserName">@t.ticketUserName</td>
+        <td id="ticketCreate">@t.ticketCreate</td>
+        <td id="ticketName">@t.ticketName</td>
+        <td id="ticketDetails" ><div style="white-space:pre;">@t.ticketDetails</div></td>
+    </tr>
+}
+    </tbody>
+</table>
+
+<div class="modal" id="sureModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="modalTitle" class="modal-title">Confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="confirm()" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="deleteUpdateModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="deleteUpdatemodalTitle" class="modal-title">Update</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="mx-auto" style="width:90%;">
+                <label for="moreInfo">Add text:</label>
+                <input type="text" class="form-control" id="moreInfo">
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="saveUpdate($('#moreInfo').val())" class="btn btn-primary">Save Text</button>
+                <button type="button" onclick="confirm()" class="btn btn-success">Job Done</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

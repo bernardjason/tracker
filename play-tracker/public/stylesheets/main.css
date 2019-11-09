@@ -1,0 +1,19 @@
+.jumbotron {
+    padding-bottom: 0px;
+    background-color:#aaeeff !important;
+
+}
+.navbar-custom {
+    background-color: #99ddff;
+}
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+    color: rgba(0,0,255,.8);
+}
+.navbar-custom .navbar-nav .nav-link {
+    color: rgba(0,0,255,.5);
+}
+.navbar-custom .nav-item.active .nav-link,
+.navbar-custom .nav-item:hover .nav-link {
+    color: #ffffff;
+}

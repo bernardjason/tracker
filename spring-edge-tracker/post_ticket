@@ -1,0 +1,16 @@
+id=$1
+if [ -z "$id" ] ; then
+	id = null
+fi
+
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"ticketName":"hello","ticketUserId":"'$id'" , "ticketDetails":"created a ticket for '$RANDOM'"}' \
+  http://localhost:3344/newticket
+echo
+echo
+
+curl http://localhost:3344/alltickets 2>/dev/null |  sed 's/},{/},\n{/g'
+echo
+curl http://localhost:3344/mytickets?userId=$id  2>/dev/null|  sed 's/},{/},\n{/g'
+

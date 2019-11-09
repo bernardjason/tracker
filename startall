@@ -1,0 +1,9 @@
+old=`pwd`
+
+for i in spring-eureka spring-edge-tracker play-tracker
+do
+    cd $old
+    echo "Start $i"
+    cd $i
+    ./start 
+done

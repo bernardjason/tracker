@@ -1,0 +1,7 @@
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"userName":"'$1'","userPassword":"'$2'"}' \
+  http://localhost:3333/createuser
+
+exit
+  --data '{"userName":"jasonb","userPassword":"bernie"}' \

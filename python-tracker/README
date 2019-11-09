@@ -1,0 +1,5 @@
+sudo pip3 install redis
+
+sudo pip3 install rejson
+
+

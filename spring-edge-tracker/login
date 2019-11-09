@@ -1,0 +1,4 @@
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"userName":"jasonb","userPassword":"bernie'$1'"}' \
+  http://localhost:3333/login

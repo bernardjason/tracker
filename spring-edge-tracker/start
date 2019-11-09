@@ -1,0 +1,5 @@
+exec java -jar target/spring-edge-tracker-2.0.0.RELEASE.jar user-control &
+echo $! > pid2
+sleep 5
+java -jar target/spring-edge-tracker-2.0.0.RELEASE.jar ticket-control &
+echo $! > pid1

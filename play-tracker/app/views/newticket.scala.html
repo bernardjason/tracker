@@ -1,0 +1,59 @@
+@(ticketForm: Form[TicketData])(implicit messages: Messages , request: RequestHeader , flash: Flash)
+
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+
+                @if(ticketForm.hasGlobalErrors) {
+                @ticketForm.globalErrors.map { error: FormError =>
+                <div>
+                    Error: @error.key: @error.message
+                </div>
+                }
+                }
+
+                @helper.form(action=routes.TicketController.ticketPost , 'id -> "myForm" ) {
+                @helper.CSRF.formField
+                @helper.inputText(ticketForm("ticketName"))
+                @helper.inputText(ticketForm("ticketDetails"))
+
+                }
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button id="new-ticket" type="submit" class="btn btn-primary odom-submit" data-dismiss="modal" value="Submit">create
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+$('#myModal').on('click', '.odom-submit', function (e) {
+    $.post('@routes.TicketController.ticketPost ', $('#myForm').serialize());
+
+    $('#myModal').modal('hide');
+
+    setTimeout(refreshFrame, 200);
+
+});
+
+function refreshFrame() {
+    $('#myTickets').attr('src', $('#myTickets').attr('src'));
+    $('#allTickets').attr('src', $('#allTickets').attr('src'));
+}
+</script>
