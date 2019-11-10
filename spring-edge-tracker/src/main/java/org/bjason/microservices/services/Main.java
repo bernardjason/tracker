@@ -11,16 +11,14 @@ public class Main {
         String serverName = "NO-VALUE";
 
         switch (args.length) {
-            case 2:
-                // Optionally set the HTTP port to listen on, overrides
-                // value in the <server-name>-server.yml file
-                System.setProperty("server.port", args[1]);
-                // Fall through into ..
-
-            case 1:
-                serverName = args[0].toLowerCase();
+            case 5:
+                System.setProperty("server.port", args[4]);
+            case 4:
+                System.setProperty("eureka.instance.url",args[0] );
+                System.setProperty("redishost", args[1]);
+                System.setProperty("redisport", args[2]);
+                serverName = args[3].toLowerCase();
                 break;
-
             default:
                 usage();
                 return;
@@ -37,7 +35,7 @@ public class Main {
     }
 
     protected static void usage() {
-        System.out.println("Usage: java -jar ... <server-name> [server-port]");
+        System.out.println("Usage: java -jar ... <eureka url> <redis.host> <redis.port> <server-name> [server-port]");
         System.out.println(
                 "     where server-name is 'user-control' or 'ticket-control' and server-port > 1024");
     }

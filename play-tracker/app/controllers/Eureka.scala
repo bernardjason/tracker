@@ -1,17 +1,21 @@
 package controllers
 
+import com.google.inject.Inject
 import com.netflix.appinfo.{ApplicationInfoManager, HealthCheckHandler, InstanceInfo, MyDataCenterInstanceConfig}
 import com.netflix.appinfo.providers.EurekaConfigBasedInstanceInfoProvider
 import com.netflix.discovery.{DefaultEurekaClientConfig, DiscoveryClient, EurekaClient}
 import javax.inject.Singleton
+import play.api.Configuration
+
 
 @Singleton
-class Eureka {
+class Eureka @Inject()(config: Configuration) {
 
   private val instanceConfig = new MyDataCenterInstanceConfig()
   private val instanceInfo: InstanceInfo = new EurekaConfigBasedInstanceInfoProvider(instanceConfig).get
   private val applicationInfoManager = new ApplicationInfoManager(instanceConfig, instanceInfo)
-  private val eurekaClient: EurekaClient = new DiscoveryClient(applicationInfoManager, new DefaultEurekaClientConfig)
+  private val eurekaClient: EurekaClient = new DiscoveryClient(applicationInfoManager,
+    new DefaultEurekaClientConfig(config.get[String]("eureka")))
 
   eurekaClient.registerHealthCheck(new HealthCheckHandler() {
     override def getStatus(currentStatus: InstanceInfo.InstanceStatus): InstanceInfo.InstanceStatus = InstanceInfo.InstanceStatus.UP
@@ -37,7 +41,7 @@ class Eureka {
 
       if (list.size() > 0) {
         val a = list.get(0)
-        response = Some(Instance(s"http://${a.getIPAddr}:${a.getPort}${url}", a))
+        response = Some(Instance(s"http://${a.getHostName}:${a.getPort}${url}", a))
       } else {
         println("************* no instances to call")
       }

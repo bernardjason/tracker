@@ -1,5 +1,15 @@
-exec java -jar target/spring-edge-tracker-2.0.0.RELEASE.jar user-control &
-echo $! > pid2
-sleep 5
-java -jar target/spring-edge-tracker-2.0.0.RELEASE.jar ticket-control &
-echo $! > pid1
+#!/bin/bash
+eureka=$1
+redishost=${2:-localhost}
+redisport=${3:-6379}
+
+logs=/var/log
+if [ -f /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar ] ; then
+	exec java -jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar $eureka ${redishost} ${redisport} user-control > ${logs}/user-control.log 2>&1 &
+	exec java -jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar $eureka ${redishost} ${redisport} ticket-control > ${logs}/ticket-control.log 2>&1  
+else
+	exec java -jar target/spring-edge-tracker-0.1-SNAPSHOT.jar http://localhost:1111/eureka ${redishost} ${redisport} user-control &
+	echo $! > pid2
+	exec java -jar target/spring-edge-tracker-0.1-SNAPSHOT.jar http://localhost:1111/eureka ${redishost} ${redisport} ticket-control &
+	echo $! > pid1
+fi

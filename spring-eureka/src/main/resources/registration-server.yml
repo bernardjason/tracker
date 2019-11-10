@@ -6,13 +6,13 @@ spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSo
 # Configure this Discovery Server
 eureka:
   instance:
-    hostname: localhost
+    hostname: ${server.name}
   client:  # Not a client, don't register with yourself
     registerWithEureka: false
     fetchRegistry: false
 
 server:
-  port: 1111   # HTTP (Tomcat) port
+  port: ${server.port}   # HTTP (Tomcat) port
 
 # Discovery Server Dashboard uses FreeMarker.  Don't want Thymeleaf templates
 spring:

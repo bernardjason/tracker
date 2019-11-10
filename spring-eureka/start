@@ -1,2 +1,20 @@
-exec java -jar target/spring-eureka-2.0.0.RELEASE.jar reg > eureka.out 2>&1 &
+hostname=$1
+port=$2
+
+if [ -z "$hostname" ] ; then
+	hostname=localhost
+	port=1111
+fi
+
+if [ -f /usr/local/lib/spring-eureka-0.1-SNAPSHOT.jar ] ; then
+	JAR=/usr/local/lib/spring-eureka-0.1-SNAPSHOT.jar
+else
+	JAR=target/spring-eureka-0.1-SNAPSHOT.jar
+fi
+
+
+echo "exec java -jar $JAR $hostname $port" > eureka.out
+exec java -jar $JAR $hostname $port  >> eureka.out 2>&1 &
 echo $! > pid1
+
+wait

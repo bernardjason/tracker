@@ -13,6 +13,7 @@ public class Main {
 	public static void main(String[] args) {
 
 		String serverName = "NO-VALUE";
+		System.setProperty("server.port", args[1]);
 
 		switch (args.length) {
 		case 2:
@@ -23,6 +24,7 @@ public class Main {
 
 		case 1:
 			serverName = args[0].toLowerCase();
+			System.setProperty("server.name", args[0]);
 			break;
 
 		default:
@@ -30,17 +32,12 @@ public class Main {
 			return;
 		}
 
-		if (serverName.equals("registration") || serverName.equals("reg")) {
-			RegistrationServer.main(args);
-		} else {
-			System.out.println("Unknown server type: " + serverName);
-			usage();
-		}
+		RegistrationServer.main(args);
 	}
 
 	protected static void usage() {
 		System.out.println("Usage: java -jar ... <server-name> [server-port]");
 		System.out.println(
-				"     where server-name is 'reg', 'registration',  and server-port > 1024");
+				"     where server-name is e.g. localhost  and server-port > 1024");
 	}
 }

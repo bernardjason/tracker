@@ -9,14 +9,19 @@ spring:
 # HTTP Server
 server.port: 3344   # HTTP (Tomcat) port
 
+redis:
+  host: ${redishost}
+  port: ${redisport}
+
 # Discovery Server Access
 #  1. DEV ONLY: Reduce the lease renewal interval to speed up registration
 #  2. Define URL of registration server (defaultZone)
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:1111/eureka/
+      defaultZone: ${eureka.instance.url}/
   instance:
+    hostname: localhost
     leaseRenewalIntervalInSeconds: 5   # DO NOT DO THIS IN PRODUCTION
 
 #  3. If using the Angel release-train ONLY, give the process a unique instance id 
