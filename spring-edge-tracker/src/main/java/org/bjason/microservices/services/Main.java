@@ -9,10 +9,13 @@ public class Main {
     public static void main(String[] args) {
 
         String serverName = "NO-VALUE";
+        System.setProperty("eureka.hostname", "localhost");
 
         switch (args.length) {
+            case 6:
+                System.setProperty("server.port", args[5]);
             case 5:
-                System.setProperty("server.port", args[4]);
+                System.setProperty("eureka.hostname", args[4]);
             case 4:
                 System.setProperty("eureka.instance.url",args[0] );
                 System.setProperty("redishost", args[1]);
@@ -20,6 +23,7 @@ public class Main {
                 serverName = args[3].toLowerCase();
                 break;
             default:
+                System.out.println(args.length);
                 usage();
                 return;
         }

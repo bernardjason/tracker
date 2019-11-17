@@ -5,18 +5,18 @@ import rejson
 
 import Database
 
-redis_host = "localhost"
+redis_host = "redis"
 redis_port = 6379
 redis_password = ""
 
 def connect():
-    global red;
-    red = rejson.Client(host='localhost', port=6379, decode_responses=True)
+    global red , redis_host , redis_port ;
+    red = rejson.Client(host=redis_host, port=redis_port, decode_responses=True)
 
 
 connect()
 
-database = r"pythonsqlite.db"
+database = r"db/pythonsqlite.db"
 
 sql_create_tickets_table = """ CREATE TABLE IF NOT EXISTS tickets (
                                         ticketId integer PRIMARY KEY,

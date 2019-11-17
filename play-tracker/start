@@ -1,1 +1,6 @@
-sbt run
+#!/bin/bash
+cd /home/app/play-tracker
+mkdir logs
+play-tracker-0.1-SNAPSHOT/bin/play-tracker -Deureka=eureka  -Dhttp.host=ip6-localhost  -Dlogger.file=/home/app/play-tracker/prod-logger.xml  -Dplay.http.secret.key=ad31779d4ee49d5ad5162bf1429c32e2e9933f3b > logs/log.txt 2>&1
+
+cat logs/log.txt

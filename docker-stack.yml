@@ -3,6 +3,9 @@ services:
 
   redis:
     image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./redis:/data
     network_mode: host
     ports:
       - "6379:6379"
@@ -50,5 +53,34 @@ services:
       placement:
         constraints: [node.role == manager]
 
+  play-tracker:
+    image: bernardjason/play-tracker
+    network_mode: host
+    ports:
+      - "9000:9000" 
+    depends_on:
+      - spring-edge-controller
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  python-tracker:
+    image: bernardjason/python-tracker
+    network_mode: host
+    volumes:
+      - ./db:/home/app/db
+    depends_on:
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+
+
 volumes:
-  db-data:
+  db:

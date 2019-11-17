@@ -21,7 +21,7 @@ eureka:
     serviceUrl:
       defaultZone: ${eureka.instance.url}/
   instance:
-    hostname: localhost
+    hostname: ${eureka.hostname}
     leaseRenewalIntervalInSeconds: 5   # DO NOT DO THIS IN PRODUCTION
 
 #  3. If using the Angel release-train ONLY, give the process a unique instance id 

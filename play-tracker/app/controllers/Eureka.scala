@@ -11,11 +11,14 @@ import play.api.Configuration
 @Singleton
 class Eureka @Inject()(config: Configuration) {
 
+  val mode = config.get[String]("eureka")
+
   private val instanceConfig = new MyDataCenterInstanceConfig()
   private val instanceInfo: InstanceInfo = new EurekaConfigBasedInstanceInfoProvider(instanceConfig).get
   private val applicationInfoManager = new ApplicationInfoManager(instanceConfig, instanceInfo)
   private val eurekaClient: EurekaClient = new DiscoveryClient(applicationInfoManager,
-    new DefaultEurekaClientConfig(config.get[String]("eureka")))
+    new DefaultEurekaClientConfig(mode))
+
 
   eurekaClient.registerHealthCheck(new HealthCheckHandler() {
     override def getStatus(currentStatus: InstanceInfo.InstanceStatus): InstanceInfo.InstanceStatus = InstanceInfo.InstanceStatus.UP
@@ -41,7 +44,9 @@ class Eureka @Inject()(config: Configuration) {
 
       if (list.size() > 0) {
         val a = list.get(0)
+
         response = Some(Instance(s"http://${a.getHostName}:${a.getPort}${url}", a))
+
       } else {
         println("************* no instances to call")
       }

@@ -5,11 +5,11 @@ redisport=${3:-6379}
 
 logs=/var/log
 if [ -f /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar ] ; then
-	exec java -jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar $eureka ${redishost} ${redisport} user-control > ${logs}/user-control.log 2>&1 &
-	exec java -jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar $eureka ${redishost} ${redisport} ticket-control > ${logs}/ticket-control.log 2>&1  
+	exec java -jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar $eureka ${redishost} ${redisport} user-control spring-edge-controller > ${logs}/user-control.log 2>&1 &
+	exec java -jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar $eureka ${redishost} ${redisport} ticket-control spring-edge-controller > ${logs}/ticket-control.log 2>&1  
 else
-	exec java -jar target/spring-edge-tracker-0.1-SNAPSHOT.jar http://localhost:1111/eureka ${redishost} ${redisport} user-control &
+	exec java -jar target/spring-edge-tracker-0.1-SNAPSHOT.jar http://localhost:1111/eureka ${redishost} ${redisport} user-control localhost &
 	echo $! > pid2
-	exec java -jar target/spring-edge-tracker-0.1-SNAPSHOT.jar http://localhost:1111/eureka ${redishost} ${redisport} ticket-control &
+	exec java -jar target/spring-edge-tracker-0.1-SNAPSHOT.jar http://localhost:1111/eureka ${redishost} ${redisport} ticket-control  localhost &
 	echo $! > pid1
 fi
