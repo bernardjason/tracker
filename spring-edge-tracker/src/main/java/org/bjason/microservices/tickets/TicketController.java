@@ -125,6 +125,7 @@ public class TicketController {
             ticketData.add(td);
         }
 
+        logger.info("Returned for "+userId+" entries "+ticketData.size());
         return ticketData;
     }
 

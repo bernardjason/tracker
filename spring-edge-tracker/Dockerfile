@@ -11,12 +11,9 @@ RUN mvn -f /home/app/pom.xml clean package
 # Package stage
 #
 FROM openjdk:8-jre-slim
-#COPY --from=build /home/app/target/demo-0.0.1-SNAPSHOT.jar /usr/local/lib/demo.jar
-#EXPOSE 8080
-#ENTRYPOINT ["java","-jar","/usr/local/lib/demo.jar"]
 COPY --from=build /home/app/target/spring-edge-tracker-0.1-SNAPSHOT.jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar
 COPY --from=build /home/app/target/spring-edge-tracker-0.1-SNAPSHOT.jar /usr/local/lib/spring-edge-tracker-0.1-SNAPSHOT.jar
 COPY --from=build /home/app/start /usr/local/bin/start
 RUN ["chmod", "+x", "/usr/local/bin/start"]
 EXPOSE 3333 3344
-ENTRYPOINT ["start" ,"http://spring-eureka:1111/eureka" , "redis" ,"6379" ]
+ENTRYPOINT ["start" ,"-u http://spring-eureka:1111/eureka -x redis -y 6379 -e spring-edge-controller"]

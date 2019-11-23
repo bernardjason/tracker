@@ -35,6 +35,7 @@ services:
 
   spring-edge-controller:
     image: bernardjason/spring-edge-controller
+    entrypoint: start -u http://spring-eureka:1111/eureka -x redis -y 6379 -e spring-edge-controller
     network_mode: host
     ports:
       - "3333:3333" 
@@ -44,7 +45,7 @@ services:
       - spring-eureka
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 2
       restart_policy:
         condition: on-failure
         delay: 10s
@@ -62,7 +63,7 @@ services:
       - spring-edge-controller
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 2
       restart_policy:
         condition: on-failure
 

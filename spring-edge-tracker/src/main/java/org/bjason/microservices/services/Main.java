@@ -1,5 +1,6 @@
 package org.bjason.microservices.services;
 
+import org.apache.commons.cli.*;
 import org.bjason.microservices.tickets.TicketControlServer;
 import org.bjason.microservices.users.UsersControlServer;
 
@@ -7,40 +8,47 @@ import org.bjason.microservices.users.UsersControlServer;
 public class Main {
 
     public static void main(String[] args) {
+        Options options = new Options();
 
-        String serverName = "NO-VALUE";
-        System.setProperty("eureka.hostname", "localhost");
+        options.addOption("e","eureka.hostname", true, "euerka hostname for requests, default localhost");
+        options.addOption("p","server.port", true, "listen on port");
+        options.addOption("u","eureka.instance.url", true, "euerka url, default http://localhost:1111/eureka");
+        options.addOption("x","redishost", true, "redit host, default localhost");
+        options.addOption("y","redisport", true, "redit port , default 6379");
+        options.addRequiredOption("s","server", true, "type of server, user-control or ticker-control");
 
-        switch (args.length) {
-            case 6:
-                System.setProperty("server.port", args[5]);
-            case 5:
-                System.setProperty("eureka.hostname", args[4]);
-            case 4:
-                System.setProperty("eureka.instance.url",args[0] );
-                System.setProperty("redishost", args[1]);
-                System.setProperty("redisport", args[2]);
-                serverName = args[3].toLowerCase();
-                break;
-            default:
-                System.out.println(args.length);
-                usage();
-                return;
+        CommandLineParser parser = new DefaultParser();
+        try {
+            CommandLine line = parser.parse( options, args );
+
+            getCmdSetProperty(line,"eureka.hostname","localhost");
+            getCmdSetProperty(line,"server.port",null);
+            getCmdSetProperty(line,"eureka.instance.url","http://localhost:1111/eureka");
+            getCmdSetProperty(line,"redishost","localhost");
+            getCmdSetProperty(line,"redisport","6379");
+            String serverName =  line.getOptionValue("server");
+            if (serverName.equals("user-control")) {
+                UsersControlServer.main(args);
+            } else if (serverName.equals("ticket-control")) {
+                TicketControlServer.main(args);
+            } else {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp( "spring edge-controller", options );
+            }
         }
-
-        if (serverName.equals("user-control")) {
-            UsersControlServer.main(args);
-        } else if (serverName.equals("ticket-control")) {
-            TicketControlServer.main(args);
-        } else {
-            System.out.println("Unknown server type: " + serverName);
-            usage();
+        catch( ParseException exp ) {
+            System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp( "spring-edge-controller", options );
         }
     }
 
-    protected static void usage() {
-        System.out.println("Usage: java -jar ... <eureka url> <redis.host> <redis.port> <server-name> [server-port]");
-        System.out.println(
-                "     where server-name is 'user-control' or 'ticket-control' and server-port > 1024");
+    private static void getCmdSetProperty(CommandLine line,String what,String defaultValue) {
+        if( line.hasOption( what ) ) {
+            System.setProperty(what, line.getOptionValue(what));
+        } else if ( defaultValue != null) {
+            System.setProperty(what,defaultValue);
+        }
     }
+
 }
